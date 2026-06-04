@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Field Service Report</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body class="bg-orange-100 p-4">
+    <div class="max-w-lg mx-auto">
+      <div class="card">
+        <h1 class="title">FIELD SERVICE REPORT</h1>
+
+        <p class="company">PT MRENE WAE SOLUSI</p>
+
+        <form id="reportForm">
+          <input type="date" id="tanggal" required />
+
+          <input type="text" id="customer" placeholder="Customer" required />
+
+          <input
+            type="text"
+            id="no_project"
+            placeholder="Nomor Project"
+            required
+          />
+
+          <input
+            type="text"
+            id="nama_project"
+            placeholder="Nama Project"
+            required
+          />
+
+          <input type="text" id="alamat" placeholder="Lokasi" required />
+
+          <input
+            type="text"
+            id="model_sistem"
+            placeholder="Model Sistem"
+            required
+          />
+
+          <select id="parameter">
+            <option>SO2</option>
+            <option>NO</option>
+            <option>NO2</option>
+            <option>CO</option>
+            <option>O2</option>
+            <option>NH3</option>
+            <option>Flow</option>
+            <option>Pressure</option>
+            <option>Temperature</option>
+          </select>
+
+          <select id="kategori">
+            <option>Maintenance</option>
+            <option>Calibration</option>
+            <option>Troubleshooting</option>
+            <option>Commissioning</option>
+            <option>Inspection</option>
+            <option>Training</option>
+          </select>
+
+          <textarea id="deskripsi" placeholder="Deskripsi pekerjaan"></textarea>
+
+          <select id="hasil">
+            <option>Selesai</option>
+            <option>Follow Up</option>
+            <option>Belum Selesai</option>
+          </select>
+
+          <button type="submit">SIMPAN LAPORAN</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
