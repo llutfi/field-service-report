@@ -10,72 +10,198 @@
 
     <link rel="stylesheet" href="css/style.css" />
   </head>
+  <body class="bg-orange-50 min-h-screen p-4">
+    <div class="max-w-3xl mx-auto">
+      <!-- HEADER -->
 
-  <body class="bg-orange-100 p-4">
-    <div class="max-w-lg mx-auto">
+      <div class="card mb-6">
+        <h1 class="text-3xl font-black">FIELD SERVICE REPORT</h1>
+
+        <p class="text-lg font-bold mt-2">PT MRENE WAE SOLUSI</p>
+      </div>
+
+      <!-- FORM -->
+
       <div class="card">
-        <h1 class="title">FIELD SERVICE REPORT</h1>
-
-        <p class="company">PT MRENE WAE SOLUSI</p>
-
         <form id="reportForm">
-          <input type="date" id="tanggal" required />
+          <!-- NO LAPORAN -->
 
-          <input type="text" id="customer" placeholder="Customer" required />
+          <div class="mb-4">
+            <label class="label"> Nomor Laporan </label>
 
-          <input
-            type="text"
-            id="no_project"
-            placeholder="Nomor Project"
-            required
-          />
+            <input
+              type="text"
+              id="reportNumber"
+              readonly
+              class="input bg-gray-100"
+            />
+          </div>
 
-          <input
-            type="text"
-            id="nama_project"
-            placeholder="Nama Project"
-            required
-          />
+          <!-- CUSTOMER -->
 
-          <input type="text" id="alamat" placeholder="Lokasi" required />
+          <div class="mb-4">
+            <label class="label"> Customer </label>
 
-          <input
-            type="text"
-            id="model_sistem"
-            placeholder="Model Sistem"
-            required
-          />
+            <select id="customer" class="input">
+              <option>Memuat data...</option>
+            </select>
+          </div>
 
-          <select id="parameter">
-            <option>SO2</option>
-            <option>NO</option>
-            <option>NO2</option>
-            <option>CO</option>
-            <option>O2</option>
-            <option>NH3</option>
-            <option>Flow</option>
-            <option>Pressure</option>
-            <option>Temperature</option>
-          </select>
+          <!-- NO PROJECT -->
 
-          <select id="kategori">
-            <option>Maintenance</option>
-            <option>Calibration</option>
-            <option>Troubleshooting</option>
-            <option>Commissioning</option>
-            <option>Inspection</option>
-            <option>Training</option>
-          </select>
+          <div class="mb-4">
+            <label class="label"> No Proyek </label>
 
-          <textarea id="deskripsi" placeholder="Deskripsi pekerjaan"></textarea>
+            <input type="text" id="noProject" class="input" />
+          </div>
 
-          <select id="hasil">
-            <option>Selesai</option>
-            <option>Follow Up</option>
-            <option>Belum Selesai</option>
-          </select>
+          <!-- NAMA PROJECT -->
 
-          <button type="submit">SIMPAN LAPORAN</button>
+          <div class="mb-4">
+            <label class="label"> Nama Proyek </label>
+
+            <input type="text" id="namaProject" class="input" />
+          </div>
+
+          <!-- ALAMAT -->
+
+          <div class="mb-4">
+            <label class="label"> Alamat </label>
+
+            <textarea id="alamat" rows="3" class="input"></textarea>
+          </div>
+
+          <!-- MODEL -->
+
+          <div class="mb-4">
+            <label class="label"> Model Sistem </label>
+
+            <select id="model" class="input">
+              <option>Memuat data...</option>
+            </select>
+          </div>
+
+          <!-- TEKNISI -->
+
+          <div class="mb-4">
+            <label class="label"> Teknisi </label>
+
+            <select id="teknisi" class="input">
+              <option>Memuat data...</option>
+            </select>
+          </div>
+          <!-- PARAMETER -->
+
+          <div class="mb-4">
+            <label class="label"> Parameter </label>
+
+            <div class="grid grid-cols-2 gap-2">
+              <label
+                ><input type="checkbox" name="parameter" value="SO2" />
+                SO2</label
+              >
+              <label
+                ><input type="checkbox" name="parameter" value="NO" /> NO</label
+              >
+              <label
+                ><input type="checkbox" name="parameter" value="NO2" />
+                NO2</label
+              >
+              <label
+                ><input type="checkbox" name="parameter" value="CO" /> CO</label
+              >
+              <label
+                ><input type="checkbox" name="parameter" value="O2" /> O2</label
+              >
+              <label
+                ><input type="checkbox" name="parameter" value="NH3" />
+                NH3</label
+              >
+              <label
+                ><input type="checkbox" name="parameter" value="Flow" />
+                Flow</label
+              >
+              <label
+                ><input type="checkbox" name="parameter" value="Pressure" />
+                Pressure</label
+              >
+              <label
+                ><input type="checkbox" name="parameter" value="Temperature" />
+                Temperature</label
+              >
+            </div>
+          </div>
+
+          <!-- KATEGORI -->
+
+          <div class="mb-4">
+            <label class="label"> Kategori Pekerjaan </label>
+
+            <div class="grid grid-cols-2 gap-2">
+              <label
+                ><input type="checkbox" name="kategori" value="Maintenance" />
+                Maintenance</label
+              >
+              <label
+                ><input type="checkbox" name="kategori" value="Calibration" />
+                Calibration</label
+              >
+              <label
+                ><input
+                  type="checkbox"
+                  name="kategori"
+                  value="Troubleshooting"
+                />
+                Troubleshooting</label
+              >
+              <label
+                ><input type="checkbox" name="kategori" value="Commissioning" />
+                Commissioning</label
+              >
+              <label
+                ><input type="checkbox" name="kategori" value="Inspection" />
+                Inspection</label
+              >
+              <label
+                ><input type="checkbox" name="kategori" value="Training" />
+                Training</label
+              >
+            </div>
+          </div>
+
+          <!-- DESKRIPSI -->
+
+          <div class="mb-4">
+            <label class="label"> Deskripsi Pekerjaan </label>
+
+            <textarea id="deskripsi" rows="5" class="input"></textarea>
+          </div>
+
+          <!-- STATUS -->
+
+          <div class="mb-4">
+            <label class="label"> Status </label>
+
+            <select id="status" class="input">
+              <option value="">Pilih Status</option>
+
+              <option value="Selesai">🟢 Selesai</option>
+
+              <option value="Follow Up">🟡 Follow Up</option>
+
+              <option value="Belum Selesai">🔴 Belum Selesai</option>
+            </select>
+          </div>
+
+          <!-- BUTTON -->
+
+          <button
+            type="submit"
+            id="saveBtn"
+            class="w-full bg-orange-500 text-white font-bold py-4 rounded-xl border-2 border-black shadow-[5px_5px_0px_black]"
+          >
+            SIMPAN LAPORAN
+          </button>
         </form>
       </div>
     </div>
