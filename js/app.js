@@ -3,7 +3,13 @@
 ===================================================== */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzNIoU7sRF7I2k39QPbX21KsFXN1MLUUwbci_U9GH623QEaPV_mpf75TyMcx5MF-Z4M/exec";
+  "https://script.google.com/macros/s/AKfycbxt8ICUoYLdM6pwvCm7Y_OR6dMB1my6Uor8PEzBS6dWynLpwN2fJlPP1SYEX8bvE7PBzg/exec";
+
+/* =====================================
+   PDF
+===================================== */
+
+let latestPdfUrl = "";
 
 /* =====================================================
    INITIALIZATION
@@ -14,6 +20,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadCustomers();
   loadModels();
   loadTechnicians();
+  loadContracts();
+  loadProjects();
+  loadLocations();
+  getGPS();
 });
 
 /* =====================================================
@@ -57,14 +67,23 @@ async function loadCustomers() {
 ===================================================== */
 
 async function loadModels() {
-  const data = await getData("models");
+  const models = await getData("models");
 
-  const select = document.getElementById("model");
+  const container = document.getElementById("alatanContainer");
 
-  select.innerHTML = '<option value="">Pilih Model</option>';
+  container.innerHTML = "";
 
-  data.forEach((model) => {
-    select.innerHTML += `<option>${model}</option>`;
+  models.forEach((model) => {
+    container.innerHTML += `
+      <label class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          value="${model}"
+          class="alatan-checkbox"
+        />
+        <span>${model}</span>
+      </label>
+    `;
   });
 }
 
@@ -81,6 +100,70 @@ async function loadTechnicians() {
 
   data.forEach((teknisi) => {
     select.innerHTML += `<option>${teknisi}</option>`;
+  });
+}
+
+/* =====================================================
+   LOAD Contracts MASTER
+===================================================== */
+async function loadContracts() {
+  const response = await fetch(API_URL + "?action=contracts");
+
+  const data = await response.json();
+
+  const select = document.getElementById("noProject");
+
+  select.innerHTML = '<option value="">Pilih Kontrak</option>';
+
+  data.forEach((item) => {
+    select.innerHTML += `
+      <option value="${item}">
+        ${item}
+      </option>
+    `;
+  });
+}
+
+/* =====================================================
+   LOAD Locations PROJECT
+===================================================== */
+
+async function loadProjects() {
+  const response = await fetch(API_URL + "?action=projects");
+
+  const data = await response.json();
+
+  const select = document.getElementById("namaProject");
+
+  select.innerHTML = '<option value="">Pilih Project</option>';
+
+  data.forEach((project) => {
+    select.innerHTML += `
+      <option value="${project}">
+        ${project}
+      </option>
+    `;
+  });
+}
+
+/* =====================================================
+   LOAD Locations MASTER
+===================================================== */
+async function loadLocations() {
+  const response = await fetch(API_URL + "?action=locations");
+
+  const data = await response.json();
+
+  const select = document.getElementById("lokasi");
+
+  select.innerHTML = '<option value="">Pilih Lokasi</option>';
+
+  data.forEach((item) => {
+    select.innerHTML += `
+      <option value="${item}">
+        ${item}
+      </option>
+    `;
   });
 }
 
@@ -150,7 +233,7 @@ async function saveReport(e) {
       }
 
       if (uploadResult.success) {
-        beforeLinks.push(uploadResult.url);
+        beforeLinks.push(uploadResult.direct_url);
       }
     }
 
@@ -189,7 +272,7 @@ async function saveReport(e) {
       }
 
       if (uploadResult.success) {
-        afterLinks.push(uploadResult.url);
+        afterLinks.push(uploadResult.direct_url);
       }
     }
 
@@ -210,9 +293,13 @@ async function saveReport(e) {
       document.getElementById("namaProject").value,
     );
 
-    formData.append("alamat", document.getElementById("alamat").value);
+    formData.append("alamat", document.getElementById("lokasi").value);
 
-    formData.append("model_sistem", document.getElementById("model").value);
+    const alatan = Array.from(
+      document.querySelectorAll(".alatan-checkbox:checked"),
+    ).map((el) => el.value);
+
+    formData.append("model_sistem", alatan.join(", "));
 
     formData.append("parameter", parameter);
 
@@ -223,6 +310,10 @@ async function saveReport(e) {
     formData.append("deskripsi", document.getElementById("deskripsi").value);
 
     formData.append("status", document.getElementById("status").value);
+
+    formData.append("latitude", document.getElementById("latitude").value);
+
+    formData.append("longitude", document.getElementById("longitude").value);
 
     formData.append("before_links", beforeLinks.join("\n"));
 
@@ -236,7 +327,17 @@ async function saveReport(e) {
     const result = await response.json();
 
     if (result.success) {
-      alert("Laporan berhasil disimpan\n\n" + result.report_number);
+      latestPdfUrl = result.pdf_url || "";
+
+      const openPdf = confirm(
+        "Laporan berhasil disimpan\n\n" +
+          result.report_number +
+          "\n\nBuka PDF sekarang?",
+      );
+
+      if (openPdf && latestPdfUrl) {
+        window.open(latestPdfUrl, "_blank");
+      }
 
       document.getElementById("reportForm").reset();
 
@@ -374,6 +475,32 @@ function removeAfterPhoto(index) {
   renderAfterPhotos();
 }
 
+/* =====================================
+   GPS
+===================================== */
+
+function getGPS() {
+  if (!navigator.geolocation) {
+    console.log("GPS tidak didukung");
+
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function (position) {
+      document.getElementById("latitude").value = position.coords.latitude;
+
+      document.getElementById("longitude").value = position.coords.longitude;
+
+      console.log("GPS:", position.coords.latitude, position.coords.longitude);
+    },
+
+    function (error) {
+      console.log("GPS Error:", error);
+    },
+  );
+}
+
 /* =====================================================
    FILE TO BASE64
 ===================================================== */
@@ -386,3 +513,19 @@ async function fileToBase64(file) {
     reader.readAsDataURL(file);
   });
 }
+
+/* =====================================
+   DOWNLOAD PDF
+===================================== */
+
+document.getElementById("pdfBtn").addEventListener("click", function () {
+  if (!latestPdfUrl) {
+    alert(
+      "Belum ada PDF yang dibuat.\n\nSilakan simpan laporan terlebih dahulu.",
+    );
+
+    return;
+  }
+
+  window.open(latestPdfUrl, "_blank");
+});

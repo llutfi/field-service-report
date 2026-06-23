@@ -14,10 +14,16 @@
     <div class="max-w-3xl mx-auto">
       <!-- HEADER -->
 
-      <div class="card mb-6">
-        <h1 class="text-3xl font-black">FIELD SERVICE REPORT</h1>
+      <!-- HEADER -->
+      <div class="card header-card">
+        <div class="header-left">
+          <h1 class="text-3xl font-black">FIELD SERVICE REPORT</h1>
+          <p class="text-lg font-bold mt-2">PT MRENE WAE SOLUSI</p>
+        </div>
 
-        <p class="text-lg font-bold mt-2">PT MRENE WAE SOLUSI</p>
+        <div class="header-right">
+          <img src="assets/logo-mws1.png" alt="MWS Logo" class="logo" />
+        </div>
       </div>
 
       <!-- FORM -->
@@ -50,36 +56,35 @@
           <!-- NO PROJECT -->
 
           <div class="mb-4">
-            <label class="label"> No Proyek </label>
+            <label class="label"> No Kontrak </label>
 
-            <input type="text" id="noProject" class="input" />
+            <select id="noProject" class="input">
+              <option>Memuat data...</option>
+            </select>
           </div>
 
           <!-- NAMA PROJECT -->
 
           <div class="mb-4">
-            <label class="label"> Nama Proyek </label>
+            <label class="label">Nama Project</label>
 
-            <input type="text" id="namaProject" class="input" />
+            <select id="namaProject" class="input">
+              <option>Memuat data...</option>
+            </select>
           </div>
 
           <!-- ALAMAT -->
 
           <div class="mb-4">
-            <label class="label"> Alamat </label>
+            <label class="label">Lokasi Project</label>
 
-            <textarea id="alamat" rows="3" class="input"></textarea>
-          </div>
-
-          <!-- MODEL -->
-
-          <div class="mb-4">
-            <label class="label"> Model Sistem </label>
-
-            <select id="model" class="input">
+            <select id="lokasi" class="input">
               <option>Memuat data...</option>
             </select>
           </div>
+
+          <input type="hidden" id="latitude" />
+          <input type="hidden" id="longitude" />
 
           <!-- TEKNISI -->
 
@@ -90,6 +95,20 @@
               <option>Memuat data...</option>
             </select>
           </div>
+
+          <!-- ALATAN -->
+
+          <div class="mb-4">
+            <label class="label"> Alatan </label>
+
+            <div
+              id="alatanContainer"
+              class="grid grid-cols-1 md:grid-cols-2 gap-2"
+            >
+              <p>Memuat data...</p>
+            </div>
+          </div>
+
           <!-- PARAMETER -->
 
           <div class="mb-4">
@@ -129,6 +148,18 @@
                 ><input type="checkbox" name="parameter" value="Temperature" />
                 Temperature</label
               >
+              <label
+                ><input type="checkbox" name="parameter" value="Temperature" />
+                NOx
+              </label>
+              <label
+                ><input type="checkbox" name="parameter" value="Temperature" />
+                C02
+              </label>
+              <label
+                ><input type="checkbox" name="parameter" value="Temperature" />
+                Hg</label
+              >
             </div>
           </div>
 
@@ -166,6 +197,22 @@
                 ><input type="checkbox" name="kategori" value="Training" />
                 Training</label
               >
+              <label
+                ><input type="checkbox" name="kategori" value="Training" />
+                Retrofit
+              </label>
+              <label
+                ><input type="checkbox" name="kategori" value="Training" />
+                Installation</label
+              >
+              <label
+                ><input type="checkbox" name="kategori" value="Training" />
+                Integration</label
+              >
+              <label
+                ><input type="checkbox" name="kategori" value="Training" /> Site
+                Survey</label
+              >
             </div>
           </div>
 
@@ -187,7 +234,7 @@
 
               <option value="Selesai">🟢 Selesai</option>
 
-              <option value="Follow Up">🟡 Follow Up</option>
+              <option value="On Progress">🟡 On Progress</option>
 
               <option value="Belum Selesai">🔴 Belum Selesai</option>
             </select>
@@ -233,17 +280,18 @@
 
           <!-- BUTTON -->
 
-          <button
-            type="submit"
-            id="saveBtn"
-            class="w-full bg-orange-500 text-white font-bold py-4 rounded-xl border-2 border-black shadow-[5px_5px_0px_black]"
-          >
-            SIMPAN LAPORAN
-          </button>
+          <div class="grid grid-cols-2 gap-3">
+            <button id="saveBtn" type="submit" class="btn-main">
+              SIMPAN LAPORAN
+            </button>
+
+            <button id="pdfBtn" type="button" class="btn-pdf">
+              📄 DOWNLOAD PDF
+            </button>
+          </div>
         </form>
       </div>
     </div>
-
     <script src="js/app.js"></script>
   </body>
 </html>

@@ -6,6 +6,22 @@
   box-shadow: 8px 8px 0 #000;
 }
 
+.header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-right {
+  margin-left: auto;
+}
+
+.logo {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+}
+
 .label {
   display: block;
   margin-bottom: 8px;
@@ -18,4 +34,25 @@
   border-radius: 12px;
   padding: 12px;
   font-size: 16px;
+}
+.btn-main {
+  width: 100%;
+  background: #3bcc17;
+  color: white;
+  padding: 14px;
+  font-weight: bold;
+  border: 3px solid black;
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 black;
+}
+
+.btn-pdf {
+  width: 100%;
+  background: #e43f1d;
+  color: white;
+  padding: 14px;
+  font-weight: bold;
+  border: 3px solid black;
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 black;
 }
