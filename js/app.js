@@ -3,7 +3,7 @@
 ===================================================== */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxt8ICUoYLdM6pwvCm7Y_OR6dMB1my6Uor8PEzBS6dWynLpwN2fJlPP1SYEX8bvE7PBzg/exec";
+  "https://script.google.com/macros/s/AKfycbxANQQayyfWHMYmh-FfHMvUz6A8eA7zIrHVB8br7K-_b8SVQQ0e9gzhKgBNSovvhxhptw/exec";
 
 /* =====================================
    PDF
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadContracts();
   loadProjects();
   loadLocations();
-  getGPS();
+  getGPSLocation();
 });
 
 /* =====================================================
@@ -150,23 +150,63 @@ async function loadProjects() {
    LOAD Locations MASTER
 ===================================================== */
 async function loadLocations() {
-  const response = await fetch(API_URL + "?action=locations");
+  try {
+    // Pastikan action=locations (sesuai handler doGet di Code.gs lo)
+    const response = await fetch(`${API_URL}?action=locations`);
+    const locations = await response.json();
 
-  const data = await response.json();
+    const select = document.getElementById("lokasi");
+    if (!select) return;
 
-  const select = document.getElementById("lokasi");
+    select.innerHTML = '<option value="">-- Pilih Lokasi / Plant --</option>';
 
-  select.innerHTML = '<option value="">Pilih Lokasi</option>';
-
-  data.forEach((item) => {
-    select.innerHTML += `
-      <option value="${item}">
-        ${item}
-      </option>
-    `;
-  });
+    if (Array.isArray(locations)) {
+      locations.forEach((loc) => {
+        if (loc) {
+          const option = document.createElement("option");
+          option.value = loc;
+          option.textContent = loc;
+          select.appendChild(option);
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Gagal memuat master lokasi:", error);
+  }
 }
 
+/* =====================================================
+   GPS & LOCATION TOGGLE MANAGEMENT
+===================================================== */
+
+function toggleLocationMode() {
+  const mode = document.querySelector(
+    'input[name="location_mode"]:checked',
+  ).value;
+  const gpsContainer = document.getElementById("gps_container");
+  const manualContainer = document.getElementById("manual_location_container");
+
+  if (mode === "gps") {
+    if (gpsContainer) gpsContainer.classList.remove("hidden");
+    if (manualContainer) manualContainer.classList.add("hidden");
+    getGPSLocation();
+  } else {
+    if (gpsContainer) gpsContainer.classList.add("hidden");
+    if (manualContainer) manualContainer.classList.remove("hidden");
+  }
+}
+
+function getGPSLocation() {
+  if (!navigator.geolocation) return;
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      document.getElementById("latitude").value = position.coords.latitude;
+      document.getElementById("longitude").value = position.coords.longitude;
+    },
+    (error) => console.log("GPS Error:", error),
+  );
+}
 /* =====================================================
    FORM SUBMIT EVENT
 ===================================================== */
@@ -281,6 +321,18 @@ async function saveReport(e) {
     ===================================== */
 
     const formData = new FormData();
+    // 1. Ambil nilai input tanggal manual dari HTML
+    const tanggalInput = document.getElementById("tanggal_manual").value;
+
+    // 2. Format tanggal dari YYYY-MM-DD menjadi DD/MM/YYYY
+    let formattedDate = "";
+    if (tanggalInput) {
+      const [year, month, day] = tanggalInput.split("-");
+      formattedDate = `${day}/${month}/${year}`;
+    }
+
+    // 3. Masukkan ke dalam formData yang akan dikirim ke backend
+    formData.append("tanggal_manual", formattedDate);
 
     formData.append("action", "save");
 
@@ -293,7 +345,24 @@ async function saveReport(e) {
       document.getElementById("namaProject").value,
     );
 
-    formData.append("alamat", document.getElementById("lokasi").value);
+    const locationMode = document.querySelector(
+      'input[name="location_mode"]:checked',
+    ).value;
+    let finalAlamat = "";
+    let finalLat = "";
+    let finalLong = "";
+
+    if (locationMode === "gps") {
+      finalLat = document.getElementById("latitude").value;
+      finalLong = document.getElementById("longitude").value;
+      finalAlamat = finalLat && finalLong ? `${finalLat}, ${finalLong}` : "-";
+    } else {
+      finalAlamat = document.getElementById("lokasi").value || "-";
+      finalLat = "-";
+      finalLong = "-";
+    }
+
+    formData.append("alamat", finalAlamat);
 
     const alatan = Array.from(
       document.querySelectorAll(".alatan-checkbox:checked"),
@@ -311,9 +380,9 @@ async function saveReport(e) {
 
     formData.append("status", document.getElementById("status").value);
 
-    formData.append("latitude", document.getElementById("latitude").value);
+    formData.append("latitude", finalLat);
 
-    formData.append("longitude", document.getElementById("longitude").value);
+    formData.append("longitude", finalLong);
 
     formData.append("before_links", beforeLinks.join("\n"));
 
@@ -473,32 +542,6 @@ function removeAfterPhoto(index) {
   afterPhotos.splice(index, 1);
 
   renderAfterPhotos();
-}
-
-/* =====================================
-   GPS
-===================================== */
-
-function getGPS() {
-  if (!navigator.geolocation) {
-    console.log("GPS tidak didukung");
-
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    function (position) {
-      document.getElementById("latitude").value = position.coords.latitude;
-
-      document.getElementById("longitude").value = position.coords.longitude;
-
-      console.log("GPS:", position.coords.latitude, position.coords.longitude);
-    },
-
-    function (error) {
-      console.log("GPS Error:", error);
-    },
-  );
 }
 
 /* =====================================================

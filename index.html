@@ -43,6 +43,20 @@
             />
           </div>
 
+          <!-- Input Tanggal Manual -->
+          <div class="mb-4">
+            <label class="block text-sm font-bold mb-1"
+              >Tanggal Pekerjaan</label
+            >
+            <input
+              type="date"
+              id="tanggal_manual"
+              name="tanggal_manual"
+              class="input bg-gray-100"
+              required
+            />
+          </div>
+
           <!-- CUSTOMER -->
 
           <div class="mb-4">
@@ -73,18 +87,73 @@
             </select>
           </div>
 
-          <!-- ALAMAT -->
-
+          <!-- LOKASI PROJECT -->
           <div class="mb-4">
-            <label class="label">Lokasi Project</label>
+            <label class="block text-sm font-bold mb-2">Lokasi Project</label>
 
-            <select id="lokasi" class="input">
-              <option>Memuat data...</option>
-            </select>
+            <!-- Choice Toggle -->
+            <div class="flex gap-4 mb-3">
+              <label class="inline-flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="location_mode"
+                  value="gps"
+                  checked
+                  onchange="toggleLocationMode()"
+                  class="form-radio text-black"
+                />
+                <span class="ml-2 font-semibold text-sm">Gunakan GPS</span>
+              </label>
+              <label class="inline-flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="location_mode"
+                  value="manual"
+                  onchange="toggleLocationMode()"
+                  class="form-radio text-black"
+                />
+                <span class="ml-2 font-semibold text-sm"
+                  >Pilih dari Master Location</span
+                >
+              </label>
+            </div>
+
+            <!-- Mode 1: GPS Container -->
+            <div id="gps_container" class="flex gap-2">
+              <input
+                type="text"
+                id="latitude"
+                placeholder="Latitude"
+                readonly
+                class="w-1/2 p-2 border-2 border-black rounded bg-gray-100 text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              />
+              <input
+                type="text"
+                id="longitude"
+                placeholder="Longitude"
+                readonly
+                class="w-1/2 p-2 border-2 border-black rounded bg-gray-100 text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              />
+              <button
+                type="button"
+                onclick="getGPSLocation()"
+                class="px-3 py-2 bg-black text-white font-bold rounded hover:bg-gray-800 text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5"
+              >
+                GPS
+              </button>
+            </div>
+
+            <!-- Mode 2: Dropdown Master Location Container -->
+            <div id="manual_location_container" class="hidden mt-2">
+              <!-- ID DISESUAIKAN DENGAN app.js ("lokasi") -->
+              <select
+                id="lokasi"
+                class="w-full p-2 border-2 border-black rounded bg-white text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              >
+                <option value="">-- Pilih Lokasi / Plant --</option>
+              </select>
+            </div>
           </div>
-
-          <input type="hidden" id="latitude" />
-          <input type="hidden" id="longitude" />
 
           <!-- TEKNISI -->
 
