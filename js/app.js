@@ -207,6 +207,8 @@ function getGPSLocation() {
     (error) => console.log("GPS Error:", error),
   );
 }
+window.toggleLocationMode = toggleLocationMode;
+window.getGPSLocation = getGPSLocation;
 /* =====================================================
    FORM SUBMIT EVENT
 ===================================================== */
