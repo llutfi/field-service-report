@@ -3,7 +3,7 @@
 ===================================================== */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxANQQayyfWHMYmh-FfHMvUz6A8eA7zIrHVB8br7K-_b8SVQQ0e9gzhKgBNSovvhxhptw/exec";
+  "https://script.google.com/macros/s/AKfycbwbJAYajLC5CTC1Eq3-oiHzezqt-SzJOqvyl8p1RmD8__6nrzB2UWWcCz7n-E025sKTcw/exec";
 
 /* =====================================
    PDF
@@ -379,6 +379,11 @@ async function saveReport(e) {
     formData.append("teknisi", document.getElementById("teknisi").value);
 
     formData.append("deskripsi", document.getElementById("deskripsi").value);
+
+    formData.append(
+      "rencana_kerja",
+      document.getElementById("rencana_kerja").value,
+    );
 
     formData.append("status", document.getElementById("status").value);
 
