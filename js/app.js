@@ -3,7 +3,7 @@
 ===================================================== */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwbJAYajLC5CTC1Eq3-oiHzezqt-SzJOqvyl8p1RmD8__6nrzB2UWWcCz7n-E025sKTcw/exec";
+  "https://script.google.com/macros/s/AKfycbzPeDpIUh28ZHzREfDSQz3Eh_t3Oj4v3wyP8-uHOz3YAhQ6Xd9Pt6w7CMNRDgQAA8JASA/exec";
 
 /* =====================================
    PDF
@@ -319,7 +319,7 @@ async function saveReport(e) {
     }
 
     /* =====================================
-       SIMPAN LAPORAN
+        SIMPAN LAPORAN
     ===================================== */
 
     const formData = new FormData();
@@ -378,6 +378,36 @@ async function saveReport(e) {
 
     formData.append("teknisi", document.getElementById("teknisi").value);
 
+    // Format dan Hitung Pekerja
+    const rawPekerja = document.getElementById("pekerja").value.trim();
+    const arrPekerja = rawPekerja
+      ? rawPekerja
+          .split(/[\n,]+/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+    const formattedPekerja =
+      arrPekerja.length > 0
+        ? `${arrPekerja.join("\n")} - ${arrPekerja.length} orang`
+        : "";
+
+    // Format dan Hitung Pengawas
+    const rawPengawas = document.getElementById("pengawas").value.trim();
+    const arrPengawas = rawPengawas
+      ? rawPengawas
+          .split(/[\n,]+/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+    const formattedPengawas =
+      arrPengawas.length > 0
+        ? `${arrPengawas.join("\n")} - ${arrPengawas.length} orang`
+        : "";
+
+    // Masukkan ke FormData
+    formData.append("pekerja", formattedPekerja);
+    formData.append("pengawas", formattedPengawas);
+
     formData.append("deskripsi", document.getElementById("deskripsi").value);
 
     formData.append(
@@ -405,16 +435,21 @@ async function saveReport(e) {
     if (result.success) {
       latestPdfUrl = result.pdf_url || "";
 
-      const openPdf = confirm(
-        "Laporan berhasil disimpan\n\n" +
-          result.report_number +
-          "\n\nBuka PDF sekarang?",
-      );
+      // 1. Ambil File ID Google Drive
+      const fileId = getGoogleDriveFileId(latestPdfUrl);
 
-      if (openPdf && latestPdfUrl) {
-        window.open(latestPdfUrl, "_blank");
+      if (fileId) {
+        // 2. Buat URL Preview dan URL Download
+        const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+        const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+        // 3. Tampilkan PDF di Modal Preview
+        showPdfPreviewModal(previewUrl, downloadUrl, result.report_number);
+      } else {
+        alert("Laporan berhasil disimpan, tetapi URL PDF tidak valid.");
       }
 
+      // 4. Reset Form & UI
       document.getElementById("reportForm").reset();
 
       beforePhotos = [];
@@ -436,6 +471,33 @@ async function saveReport(e) {
   saveBtn.disabled = false;
 
   saveBtn.innerHTML = "SIMPAN LAPORAN";
+}
+
+/* =====================================
+   HELPER & MODAL PREVIEW FUNCTIONS
+===================================== */
+
+// Fungsi untuk mengambil File ID Google Drive
+function getGoogleDriveFileId(url) {
+  const match =
+    url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : null;
+}
+
+// Fungsi untuk menampilkan Pop-Up Modal Preview PDF
+function showPdfPreviewModal(previewUrl, downloadUrl, reportNumber) {
+  document.getElementById("modalReportTitle").innerText =
+    "Preview Laporan: " + reportNumber;
+  document.getElementById("pdfPreviewIframe").src = previewUrl;
+  // document.getElementById("btnDownloadPdf").href = downloadUrl;
+
+  document.getElementById("pdfModal").style.display = "flex";
+}
+
+// Fungsi untuk menutup Pop-Up Modal
+function closePdfModal() {
+  document.getElementById("pdfModal").style.display = "none";
+  document.getElementById("pdfPreviewIframe").src = "";
 }
 
 /* =====================================================
