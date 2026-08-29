@@ -3,7 +3,7 @@
 ===================================================== */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzPeDpIUh28ZHzREfDSQz3Eh_t3Oj4v3wyP8-uHOz3YAhQ6Xd9Pt6w7CMNRDgQAA8JASA/exec";
+  "https://script.google.com/macros/s/AKfycbyTrPVvRouvtg-R6IMbZhsGK1kJoxUzbHyWbqBa-eHDmQz6RtMcbtf-iihmjq4VqNqnjg/exec";
 
 /* =====================================
    PDF
@@ -425,6 +425,13 @@ async function saveReport(e) {
 
     formData.append("after_links", afterLinks.join("\n"));
 
+    // Ambil Gambar Tanda Tangan (Base64)
+    let signatureBase64 = "";
+    if (!isSignatureEmpty) {
+      signatureBase64 = canvas.toDataURL("image/png");
+    }
+    formData.append("signature", signatureBase64);
+
     const response = await fetch(API_URL, {
       method: "POST",
       body: formData,
@@ -640,4 +647,91 @@ document.getElementById("pdfBtn").addEventListener("click", function () {
   }
 
   window.open(latestPdfUrl, "_blank");
+});
+
+// =====================================
+// LOGIKA CANVAS TANDA TANGAN
+// =====================================
+const canvas = document.getElementById("signatureCanvas");
+const ctx = canvas.getContext("2d");
+let isDrawing = false;
+let isSignatureEmpty = true;
+
+// Setup awal gaya garis
+function setStyle() {
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+}
+
+// Menyesuaikan ukuran buffer canvas dengan ukuran asli layar HP/Browser
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width === 0) return;
+
+  // Set ukuran internal buffer canvas sesuai ukuran elemen CSS di layar
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  setStyle(); // Reset style setelah resize
+}
+
+// Jalankan saat load & saat layar HP di-rotate
+window.addEventListener("load", resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  // Kalkulasi skala jika CSS width beda dengan internal canvas width
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY,
+  };
+}
+
+function startDrawing(e) {
+  // Cegah scroll halaman di HP saat mulai menyentuh canvas
+  if (e.type === "touchstart") e.preventDefault();
+
+  isDrawing = true;
+  isSignatureEmpty = false;
+  const pos = getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  if (e.cancelable) e.preventDefault(); // Mencegah layar HP scroll saat garis ditarik
+
+  const pos = getPos(e);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+}
+
+function stopDrawing() {
+  isDrawing = false;
+}
+
+// Event Listener Mouse (Desktop)
+canvas.addEventListener("mousedown", startDrawing);
+canvas.addEventListener("mousemove", draw);
+canvas.addEventListener("mouseup", stopDrawing);
+canvas.addEventListener("mouseleave", stopDrawing);
+
+// Event Listener Touchscreen (HP)
+canvas.addEventListener("touchstart", startDrawing, { passive: false });
+canvas.addEventListener("touchmove", draw, { passive: false });
+canvas.addEventListener("touchend", stopDrawing);
+
+// Tombol Reset Canvas
+document.getElementById("clearSignatureBtn").addEventListener("click", () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  isSignatureEmpty = true;
 });
